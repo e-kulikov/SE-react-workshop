@@ -1,31 +1,33 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Button as AntButton, Card, Tooltip } from 'antd';
-import {
-  BugTwoTone,
-  CloudTwoTone,
-  ExclamationCircleTwoTone,
-  ExperimentTwoTone,
-  FireTwoTone,
-  PictureTwoTone,
-  SlidersTwoTone,
-} from '@ant-design/icons';
+import { Card } from 'antd';
 
 import { PokemonData } from '../api/pokemon';
 import { api } from '../api';
 import { firstCapital } from '../utils/string';
-import { styled } from 'styled-components';
+import { PokemonTypes } from './pokemon-type';
+import { useStateManager } from '../state';
+import { savePokemonData } from '../state/actions/actions';
 
 interface PokemonCardProps {
   pokemon: Pick<PokemonData, 'name'>;
 }
 
 export const PokemonCard = ({ pokemon: { name } }: PokemonCardProps) => {
-  const [pokemon, setPokemonData] = useState<PokemonData | null>(null);
+  const { state, dispatch } = useStateManager();
+  const goTo = useNavigate();
 
   useEffect(() => {
-    api.pokemon.getOne({ name }).then(setPokemonData);
-  }, [name]);
+    api.pokemon.getOne({ name }).then((pokemon) => {
+      dispatch(savePokemonData(pokemon));
+    });
+  }, [name, dispatch]);
+
+  const pokemon = useMemo(
+    () => state.pokemonData[name],
+    [name, state.pokemonData]
+  );
 
   if (!pokemon) return <Card loading />;
 
@@ -35,6 +37,7 @@ export const PokemonCard = ({ pokemon: { name } }: PokemonCardProps) => {
       title={firstCapital(pokemon.name)}
       cover={<img alt={pokemon.name} src={pokemon.sprites.front_default} />}
       extra={<PokemonTypes types={pokemon.types} />}
+      onClick={() => goTo(`/pokemon/${pokemon.name}`)}
     >
       <Card.Meta
         description={
@@ -47,42 +50,4 @@ export const PokemonCard = ({ pokemon: { name } }: PokemonCardProps) => {
       />
     </Card>
   );
-};
-
-const Button = styled(AntButton)({
-  border: 0,
-});
-
-const PokemonStats = ({ stats }: { stats: PokemonData['stats'] }) => (
-  <>
-    {stats.map(({ base_stat, stat: { name } }) => (
-      <p>
-        <strong>{name}: </strong>
-        {base_stat}
-      </p>
-    ))}
-  </>
-);
-
-const PokemonTypes = ({ types }: { types: PokemonData['types'] }) => (
-  <>
-    {types.map(({ type: { name } }) => {
-      const Icon = TypeIcons[name] || TypeIcons.default;
-      return (
-        <Tooltip title={name}>
-          <Button shape="circle" icon={<Icon />} />
-        </Tooltip>
-      );
-    })}
-  </>
-);
-
-const TypeIcons: Record<string, () => ReactElement> = {
-  fire: () => <FireTwoTone twoToneColor="orange" />,
-  bug: () => <BugTwoTone twoToneColor="green" />,
-  flying: () => <CloudTwoTone twoToneColor="lightgray" />,
-  grass: () => <PictureTwoTone twoToneColor="lightgreen" />,
-  poison: () => <ExperimentTwoTone twoToneColor="violet" />,
-  water: () => <SlidersTwoTone twoToneColor="blue" />,
-  default: () => <ExclamationCircleTwoTone twoToneColor="gray" />,
 };

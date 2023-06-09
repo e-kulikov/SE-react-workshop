@@ -17,4 +17,6 @@ export interface AbilityData {
   }[];
 }
 
+export type AbilityListItem = Pick<AbilityData, 'name'>;
+
 export class Ability extends SegmentAPI<AbilityData> {}

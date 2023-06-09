@@ -6,18 +6,17 @@ import { api } from '../api';
 
 import config from '../config.json';
 import { styled } from 'styled-components';
+import { useParams } from 'react-router-dom';
 
-interface ListProps {
-  page: number;
-}
-export const List = ({ page = 1 }: ListProps) => {
+export const List = () => {
   const [pokemons, setPokemons] = useState<Pick<PokemonData, 'name'>[]>([]);
+  const { page = 1 } = useParams();
 
   useEffect(() => {
     api.pokemon
       .list({
         limit: config.DEFAULT_CARDS_AMOUNT,
-        offset: (page - 1) * config.DEFAULT_CARDS_AMOUNT,
+        offset: (+page - 1) * config.DEFAULT_CARDS_AMOUNT,
       })
       .then(setPokemons);
   }, [page]);
