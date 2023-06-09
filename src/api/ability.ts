@@ -1,4 +1,4 @@
-import { SegmentAPI } from './index';
+import { SegmentAPI } from './_segment';
 
 export interface AbilityData {
   id: number;

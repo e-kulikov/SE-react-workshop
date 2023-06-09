@@ -1,3 +1,4 @@
 {
-  "API_HOST": "https://pokeapi.co/api/v2"
+  "API_HOST": "https://pokeapi.co/api/v2",
+  "DEFAULT_CARDS_AMOUNT": 12
 }
