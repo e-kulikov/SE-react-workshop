@@ -3,12 +3,7 @@ import type { PokemonListItem } from './pokemon';
 
 export interface PokemonSpeciesData {
   name: string;
-  form_description: {
-    description: string;
-    language: {
-      name: string;
-    };
-  }[];
+  form_description?: string;
   evolution_chain: {
     url?: string;
     id: number;
@@ -16,6 +11,9 @@ export interface PokemonSpeciesData {
   varieties: {
     is_default: boolean;
     pokemon: PokemonListItem[];
+  };
+  habitat: {
+    name: string;
   };
 }
 
@@ -30,8 +28,16 @@ export class PokemonSpecies extends SegmentAPI<PokemonSpeciesData> {
       .split('/')
       .pop()!;
 
+    const formDescription = (
+      result.form_description as unknown as {
+        description: string;
+        language: { name: string };
+      }[]
+    )?.find(({ language }) => language.name === 'en')?.description;
+
     return {
       ...result,
+      form_description: formDescription,
       evolution_chain: {
         ...result.evolution_chain,
         id: evolutionChainId,

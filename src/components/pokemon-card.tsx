@@ -12,9 +12,13 @@ import { savePokemonData } from '../state/actions/actions';
 
 interface PokemonCardProps {
   pokemon: Pick<PokemonData, 'name'>;
+  showMeta?: boolean;
 }
 
-export const PokemonCard = ({ pokemon: { name } }: PokemonCardProps) => {
+export const PokemonCard = ({
+  pokemon: { name },
+  showMeta,
+}: PokemonCardProps) => {
   const { state, dispatch } = useStateManager();
   const goTo = useNavigate();
 
@@ -39,15 +43,17 @@ export const PokemonCard = ({ pokemon: { name } }: PokemonCardProps) => {
       extra={<PokemonTypes types={pokemon.types} />}
       onClick={() => goTo(`/pokemon/${pokemon.name}`)}
     >
-      <Card.Meta
-        description={
-          <div>
-            <p>Height: {pokemon.height}</p>
-            <p>Weight: {pokemon.weight}</p>
-            <p>Abilities: {pokemon.abilities.length}</p>
-          </div>
-        }
-      />
+      {showMeta && (
+        <Card.Meta
+          description={
+            <div>
+              <p>Height: {pokemon.height}</p>
+              <p>Weight: {pokemon.weight}</p>
+              <p>Abilities: {pokemon.abilities.length}</p>
+            </div>
+          }
+        />
+      )}
     </Card>
   );
 };

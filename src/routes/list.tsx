@@ -27,7 +27,7 @@ export const List = () => {
     <Row gutter={[10, 10]} wrap>
       {pokemons.map((pokemon) => (
         <Col key={pokemon.name} xs={12} sm={8} md={6} lg={4}>
-          <PokemonCard pokemon={pokemon} />
+          <PokemonCard pokemon={pokemon} showMeta />
         </Col>
       ))}
     </Row>
