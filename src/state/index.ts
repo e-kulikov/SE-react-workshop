@@ -1,11 +1,21 @@
-import { PokemonData, PokemonListItem } from '../api/pokemon';
+import { PokemonData, PokemonSpeciesData } from '../api';
 import React, { createContext, useContext, useReducer } from 'react';
 import { reducer } from './reducer';
 import { Action } from './actions';
+import { AbilityData } from '../api/ability';
+
+interface MetaShape {
+  listLimit?: number;
+}
 
 const INITIAL_STATE = {
-  pokemons: [] as PokemonListItem[],
-  pokemonData: {} as Record<PokemonData['name'], PokemonData>,
+  abilityData: {} as Record<AbilityData['name'], AbilityData | undefined>,
+  pokemonData: {} as Record<PokemonData['name'], PokemonData | undefined>,
+  pokemonSpeciesData: {} as Record<
+    PokemonSpeciesData['name'],
+    PokemonSpeciesData | undefined
+  >,
+  meta: {} as MetaShape,
 };
 
 export type State = typeof INITIAL_STATE;

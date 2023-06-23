@@ -10,8 +10,8 @@ export interface PokemonSpeciesData {
   };
   varieties: {
     is_default: boolean;
-    pokemon: PokemonListItem[];
-  };
+    pokemon: PokemonListItem;
+  }[];
   habitat: {
     name: string;
   };
@@ -29,11 +29,15 @@ export class PokemonSpecies extends SegmentAPI<PokemonSpeciesData> {
       .pop()!;
 
     const formDescription = (
-      result.form_description as unknown as {
-        description: string;
-        language: { name: string };
-      }[]
-    )?.find(({ language }) => language.name === 'en')?.description;
+      result as PokemonSpeciesData & {
+        form_descriptions: {
+          description: string;
+          language: { name: string };
+        }[];
+      }
+    ).form_descriptions.find(
+      ({ language }) => language.name === 'en'
+    )?.description;
 
     return {
       ...result,
