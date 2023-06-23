@@ -4,6 +4,9 @@ import { PokemonSpecies } from './pokemon-species';
 
 import config from '../config.json';
 
+export type { PokemonData } from './pokemon';
+export type { PokemonSpeciesData } from './pokemon-species';
+
 export class API {
   constructor(readonly host: string) {}
 
