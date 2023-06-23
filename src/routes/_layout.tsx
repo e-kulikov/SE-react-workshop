@@ -1,6 +1,7 @@
 import { Layout as AntdLayout, Space } from 'antd';
 import { Outlet } from 'react-router-dom';
 import { styled } from 'styled-components';
+import { Back } from '../components/back';
 
 const Header = styled(AntdLayout.Header)({
   fontSize: '2em',
@@ -10,7 +11,10 @@ const Header = styled(AntdLayout.Header)({
 export const Layout = () => (
   <Space direction="vertical" style={{ width: '100%' }} size={[0, 48]}>
     <AntdLayout>
-      <Header>Open Pokemon Database</Header>
+      <Header>
+        <Back />
+        Open Pokemon Database
+      </Header>
       <AntdLayout.Content>
         <Outlet />
       </AntdLayout.Content>
