@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, redirect } from 'react-router-dom';
 
 import { Layout } from './_layout';
 import { List } from './list';
@@ -7,16 +7,21 @@ import { Pokemon } from './pokemon';
 export const routerConfig = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    Component: Layout,
     children: [
       {
-        path: '/:page',
         index: true,
-        element: <List />,
+        Component: List,
+      },
+      {
+        path: 'pokemons/:page?',
+        Component: List,
+        loader: async ({ params: { page } }) =>
+          (!page || page === '1') && redirect('/'),
       },
       {
         path: 'pokemon/:name',
-        element: <Pokemon />,
+        Component: Pokemon,
       },
     ],
   },
