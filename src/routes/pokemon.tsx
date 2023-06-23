@@ -1,34 +1,21 @@
-import { useEffect, useMemo, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-import { Card, Col, Descriptions, Row as AntRow, Space, Spin } from 'antd';
+import { Card, Space, Spin } from 'antd';
 
-import { api } from '../api';
-import { PokemonSpeciesData } from '../api/pokemon-species';
-import { useStateManager } from '../state';
-import { styled } from 'styled-components';
-import { firstCapital } from '../utils/string';
-
-const Row = styled(AntRow)({
-  width: '100%',
-  padding: 10,
-});
+import { usePokemon } from '../state/hooks/use-pokemon';
+import { Grid } from '../components/grid';
+import { usePokemonSpecies } from '../state/hooks/use-pokemon-species';
+import { SinglePageTitle } from '../components/single-page-title';
+import { PokemonMetaCard } from '../components/pokemon-meta-card';
+import { CarouselRef } from 'antd/es/carousel';
+import { PokemonImage } from '../components/pokemon-image';
 
 export const Pokemon = () => {
-  const { state } = useStateManager();
   const { name } = useParams();
-  const [pokemonSpecies, setPokemonSpeciesData] =
-    useState<PokemonSpeciesData | null>(null);
 
-  const pokemon = useMemo(
-    () => state.pokemonData[name!],
-    [name, state.pokemonData]
-  );
-
-  useEffect(() => {
-    if (!name) return;
-    api.species.getOne({ name }).then(setPokemonSpeciesData);
-  }, [name, state]);
+  const pokemon = usePokemon(name!);
+  const pokemonSpecies = usePokemonSpecies(pokemon?.species.name);
 
   if (!pokemon || !pokemonSpecies)
     return (
@@ -37,66 +24,27 @@ export const Pokemon = () => {
       </Space>
     );
 
-  console.log(pokemonSpecies);
-
   return (
-    <Row gutter={[10, 10]} wrap>
-      <Col span={12}>
-        <Card style={{ height: '100%' }}>
-          <Card.Meta title={firstCapital(pokemon.name)} />
-        </Card>
-      </Col>
-      <Col span={12}>
-        <Card>
-          <Card.Meta
-            description={
-              <Descriptions>
-                <Descriptions.Item label="Habitat:">
-                  <Link to={`/habitat/${pokemonSpecies.habitat.name}`}>
-                    {pokemonSpecies.habitat.name}
-                  </Link>
-                </Descriptions.Item>
-                <Descriptions.Item label="Types:">
-                  {pokemon.types.map(
-                    ({ type: { name } }, index, { length }) => (
-                      <span key={name}>
-                        <Link to={`/type/${name}`}>{name}</Link>
-                        {index !== length - 1 && ', '}
-                      </span>
-                    )
-                  )}
-                </Descriptions.Item>
-              </Descriptions>
-            }
-          />
-        </Card>
-      </Col>
-      <Col span={4}>
-        <Card
-          cover={<img alt={pokemon.name} src={pokemon.sprites.front_default} />}
+    <Grid gap={10} style={{ padding: '10px' }}>
+      <Grid.Cell align="stretch" column-span={12}>
+        <SinglePageTitle title={pokemon.name} />
+      </Grid.Cell>
+      <Grid.Cell column-span={12}>
+        <PokemonMetaCard
+          habitat={pokemonSpecies.habitat}
+          types={pokemon.types}
         />
-      </Col>
-      <Col span={12}>
+      </Grid.Cell>
+      <Grid.Cell column-span={6}>
         <Card>
-          <Card.Meta
-            description={
-              <Descriptions>
-                {pokemonSpecies.form_description && (
-                  <Descriptions.Item>
-                    {pokemonSpecies.form_description}
-                  </Descriptions.Item>
-                )}
-                <Descriptions.Item label="Weight">
-                  {pokemon.weight}
-                </Descriptions.Item>
-                <Descriptions.Item label="Height">
-                  {pokemon.height}
-                </Descriptions.Item>
-              </Descriptions>
-            }
+          <PokemonImage
+            name={pokemon.name}
+            front={pokemon.sprites.front_default}
+            back={pokemon.sprites.back_default}
+            arrows
           />
         </Card>
-      </Col>
-    </Row>
+      </Grid.Cell>
+    </Grid>
   );
 };
