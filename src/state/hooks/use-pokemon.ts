@@ -12,9 +12,9 @@ export const usePokemon = (name: PokemonData['name']) => {
 
   useEffect(() => {
     if (existed) return;
-    api.pokemon
-      .getOne({ name })
-      .then((pokemonData) => dispatch(savePokemonData(pokemonData)));
+    api.pokemon.getOne({ name }).then((pokemonData) => {
+      return dispatch(savePokemonData(pokemonData));
+    });
   }, [dispatch, existed, name]);
 
   return existed;
